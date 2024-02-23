@@ -6,14 +6,22 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(express.json()); // for parsing application/json
 
-// Example route for turning a lamp on/off
+// Route for turning lamp on/off
 app.post('/lamp', (req, res) => {
     const { state } = req.body; // state can be "on" or "off"
-    // Logic to communicate with Arduino goes here
+    
+    // CHANGE STATE IN DATABASE
 
     // Send response back to client
     res.json({ message: `Lamp turned "${state}"` });
 });
+
+
+// Password should be encrypted before being send from the user.
+app.post('/addUser', (req, res) => {
+    const { email, password } = req.body;
+    
+})
 
 // Start the server
 app.listen(PORT, () => {
