@@ -1,47 +1,37 @@
 const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 3000;
-const { signInWithEmailAndPassword, createUserWithEmailAndPassword } = require('./databaseConnection');
-
+const { updateWhiteLed, updateYellowLed } = require('./databaseConnection');
 
 // Middleware
 app.use(express.json()); // for parsing application/json
 
-// Route for turning lamp on/off
-app.post('/lamp', (req, res) => {
-    const { state } = req.body; // state can be "on" or "off"
+// Route for turning white led on/off
+app.post('/whiteLed', async (req, res) => {
+    const { state } = req.body; // state is expected to be true or false
     
-    // CHANGE STATE IN DATABASE
-
-    // Send response back to client
-    res.json({ message: `Lamp turned "${state}"` });
-});
-
-// Route for signing in
-app.post('/signin', async (req, res) => {
-    const { email, password } = req.body;
     try {
-        const user = await signInWithEmailAndPassword(email, password);
-        res.status(200).json({ user });
+        await updateWhiteLed(state);
+        // Send response back to client indicating the action taken
+        res.json({ message: `Lamp turned ${state ? 'on' : 'off'}` });
     } catch (error) {
-        res.status(401).json({ error: error.message });
+        // Handle errors by sending a 500 status code and the error message
+        res.status(500).json({ error: error.message });
     }
 });
 
-
-// Password should be encrypted before being send from the user.
-// Route for creating a new user
-app.post('/addUser', async (req, res) => {
-    const { email, password } = req.body;
-    console.log(email, "   ", password)
+app.post('/yellowLed', async (req, res) => {
+    const { state } = req.body; // state is expected to be true or false
+    
     try {
-        const user = await createUserWithEmailAndPassword(email, password);
-        res.status(200).json({ user });
+        await updateYellowLed(state);
+        // Send response back to client indicating the action taken
+        res.json({ message: `Lamp turned ${state ? 'on' : 'off'}` });
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        // Handle errors by sending a 500 status code and the error message
+        res.status(500).json({ error: error.message });
     }
 });
-
 
 // Start the server
 app.listen(PORT, () => {
