@@ -10,14 +10,13 @@ admin.initializeApp({
 // Get a database reference
 const db = admin.database();
 
-// Function to update the white LED state
+// Strings for database refences
+const whiteLedDeviceState = "devices/0/deviceState";
+const yellowLedDeviceState = "devices/1/deviceState"
+
 const updateWhiteLed = async (state) => {
   try {
-    // Define the path to the white LED's state in the database
-    // Assuming the LED is the first device in your database structure with id "1"
-    const ref = db.ref('devices/0/deviceState');
-    
-    // Set the new state of the white LED
+    const ref = db.ref(whiteLedDeviceState);
     await ref.set(state);
     console.log(`White LED state updated to: ${state}`);
   } catch (error) {
@@ -26,13 +25,22 @@ const updateWhiteLed = async (state) => {
   }
 };
 
+const readWhiteLedState = async () => {
+  try {
+    const ref = db.ref(whiteLedDeviceState);
+    const snapshot = await ref.once('value'); // Use once('value') to read the data at the path
+    const state = snapshot.val(); // Extracting the state value from the snapshot
+    console.log(`White LED state is: ${state}`);
+    return state; // Return the state
+  } catch (error) {
+    console.error('Error reading the white LED state:', error);
+    throw error; // Rethrow the error so it can be handled by the caller
+  }
+};
+
 const updateYellowLed = async (state) => {
   try {
-    // Define the path to the white LED's state in the database
-    // Assuming the LED is the first device in your database structure with id "1"
-    const ref = db.ref('devices/1/deviceState');
-    
-    // Set the new state of the white LED
+    const ref = db.ref(yellowLedDeviceState);
     await ref.set(state);
     console.log(`yellow LED state updated to: ${state}`);
   } catch (error) {
@@ -41,4 +49,17 @@ const updateYellowLed = async (state) => {
   }
 };
 
-module.exports = { updateWhiteLed, updateYellowLed };
+const readYellowLedState = async () => {
+  try {
+    const ref = db.ref(yellowLedDeviceState);
+    const snapshot = await ref.once('value'); // Use once('value') to read the data at the path
+    const state = snapshot.val(); // Extracting the state value from the snapshot
+    console.log(`White LED state is: ${state}`);
+    return state; // Return the state
+  } catch (error) {
+    console.error('Error reading the white LED state:', error);
+    throw error; // Rethrow the error so it can be handled by the caller
+  }
+};
+
+module.exports = { updateWhiteLed, readWhiteLedState, updateYellowLed, readYellowLedState };
