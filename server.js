@@ -1,66 +1,43 @@
 const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 3000;
-const { updateWhiteLed, readWhiteLedState, readWhiteLedImage, updateYellowLed, readYellowLedState, readYellowLedImage } = require('./databaseConnection');
+const { updateDeviceState, readDeviceState, readDeviceImage } = require('./databaseConnection');
 
-// Middleware
-app.use(express.json()); // for parsing application/json
+app.use(express.json());
 
-app.post('/whiteLed', async (req, res) => {
-  const { state } = req.body; 
-  try {
-      await updateWhiteLed(state);
-      res.json({ message: `Lamp turned ${state}` });
-  } catch (error) {
-      res.status(500).json({ error: error.message });
-  }
-});
-
-app.get('/whiteLed', async (req, res) => {
-  try {
-    const state = await readWhiteLedState();
-    res.json({ state: state, message: `White LED is currently ${state}` });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-app.get('/whiteLedImage', async (req,res) => {
-  try {
-    const imageUrl = await readWhiteLedImage();
-    res.json({imageUrl: imageUrl});
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-})
-
-app.post('/yellowLed', async (req, res) => {
+// Update device state
+app.post('/device/:type', async (req, res) => {
+  const { type } = req.params;
   const { state } = req.body;
   try {
-      await updateYellowLed(state);
-      res.json({ message: `Lamp turned ${state}` });
-  } catch (error) {
-      res.status(500).json({ error: error.message });
-  }
-});
-
-app.get('/yellowLed', async (req, res) => {
-  try {
-    const state = await readYellowLedState();
-    res.json({ state: state });
+    await updateDeviceState(type, state);
+    res.json({ message: `${type} turned ${state}` });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-app.get('/yellowLedImage', async (req,res) => {
+// Read device state
+app.get('/device/:type/state', async (req, res) => {
+  const { type } = req.params;
   try {
-    const imageUrl = await readYellowLedImage();
-    res.json({imageUrl: imageUrl});
+    const state = await readDeviceState(type);
+    res.json({ state: state, message: `${type} is currently ${state}` });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-})
+});
+
+// Read device image URL
+app.get('/device/:type/image', async (req, res) => {
+  const { type } = req.params;
+  try {
+    const imageUrl = await readDeviceImage(type);
+    res.json({ imageUrl: imageUrl });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

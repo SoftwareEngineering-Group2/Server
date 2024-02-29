@@ -1,93 +1,49 @@
-// Require the Firebase Admin SDK
+// databaseOperations.js
 const admin = require('firebase-admin');
+const deviceConfig = require('./deviceConfig');
 
-// Initialize the app with a service account, granting admin privileges
 admin.initializeApp({
   credential: admin.credential.cert(require('./firebase-adminsdk.json')),
-  databaseURL: 'https://smart-home-7ba6c-default-rtdb.europe-west1.firebasedatabase.app' // replace with your Realtime Database URL
+  databaseURL: 'https://smart-home-7ba6c-default-rtdb.europe-west1.firebasedatabase.app'
 });
 
-// Get a database reference
 const db = admin.database();
 
-// Strings for database refences
-const whiteLedDeviceStateRef = "devices/0/deviceState";
-const whiteLedImageUrlRef = "devices/0/deviceIcon";
-const yellowLedDeviceStateRef = "devices/1/deviceState";
-const yellowLedImageUrlRef = "devices/1/deviceIcon"
-
-const updateWhiteLed = async (state) => {
+const updateDeviceState = async (deviceType, state) => {
   try {
-    const ref = db.ref(whiteLedDeviceState);
+    const ref = db.ref(deviceConfig[deviceType].stateRef);
     await ref.set(state);
-    console.log(`White LED state updated to: ${state}`);
+    console.log(`${deviceType} state updated to: ${state}`);
   } catch (error) {
-    console.error('Error updating the white LED state:', error);
-    throw error; // Rethrow the error so it can be handled by the caller
+    console.error(`Error updating the ${deviceType} state:`, error);
+    throw error;
   }
 };
 
-const readWhiteLedState = async () => {
+const readDeviceState = async (deviceType) => {
   try {
-    const ref = db.ref(whiteLedDeviceStateRef);
-    const snapshot = await ref.once('value'); // Use once('value') to read the data at the path
-    const state = snapshot.val(); // Extracting the state value from the snapshot
-    console.log(`White LED state is: ${state}`);
-    return state; // Return the state
+    const ref = db.ref(deviceConfig[deviceType].stateRef);
+    const snapshot = await ref.once('value');
+    const state = snapshot.val();
+    console.log(`${deviceType} state is: ${state}`);
+    return state;
   } catch (error) {
-    console.error('Error reading the white LED state:', error);
-    throw error; // Rethrow the error so it can be handled by the caller
+    console.error(`Error reading the ${deviceType} state:`, error);
+    throw error;
   }
 };
 
-const readWhiteLedImage = async () =>{
-  try{
-    const ref = db.ref(whiteLedImageUrlRef);
+const readDeviceImage = async (deviceType) => {
+  try {
+    const ref = db.ref(deviceConfig[deviceType].imageRef);
     const snapshot = await ref.once('value');
     const imageUrl = snapshot.val();
-    console.log(`White LED imageUrl is: ${imageUrl}`);
+    console.log(`${deviceType} imageUrl is: ${imageUrl}`);
     return imageUrl;
-  }catch(error){
-    console.error('Error reading the white LED state:', error);
-    throw error; // Rethrow the error so it can be handled by the caller
-  }
-}
-
-const updateYellowLed = async (state) => {
-  try {
-    const ref = db.ref(yellowLedDeviceStateRef);
-    await ref.set(state);
-    console.log(`yellow LED state updated to: ${state}`);
   } catch (error) {
-    console.error('Error updating the yellow LED state:', error);
-    throw error; // Rethrow the error so it can be handled by the caller
+    console.error(`Error reading the ${deviceType} image:`, error);
+    throw error;
   }
 };
 
-const readYellowLedState = async () => {
-  try {
-    const ref = db.ref(yellowLedDeviceStateRef);
-    const snapshot = await ref.once('value'); // Use once('value') to read the data at the path
-    const state = snapshot.val(); // Extracting the state value from the snapshot
-    console.log(`White LED state is: ${state}`);
-    return state; // Return the state
-  } catch (error) {
-    console.error('Error reading the white LED state:', error);
-    throw error; // Rethrow the error so it can be handled by the caller
-  }
-};
-
-const readYellowLedImage = async () =>{
-  try{
-    const ref = db.ref(yellowLedImageUrlRef);
-    const snapshot = await ref.once('value');
-    const imageUrl = snapshot.val();
-    console.log(`Yellow LED imageUrl is: ${imageUrl}`);
-    return imageUrl;
-  }catch(error){
-    console.error('Error reading the white LED state:', error);
-    throw error; // Rethrow the error so it can be handled by the caller
-  }
-}
-
-module.exports = {updateWhiteLed, readWhiteLedState,readWhiteLedImage, updateYellowLed, readYellowLedState, readYellowLedImage};
+module.exports = { updateDeviceState, readDeviceState, readDeviceImage };
