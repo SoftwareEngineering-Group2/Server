@@ -1,6 +1,4 @@
-// databaseOperations.js
 const admin = require('firebase-admin');
-const deviceConfig = require('./deviceConfig');
 
 admin.initializeApp({
   credential: admin.credential.cert(require('./firebase-adminsdk.json')),
@@ -9,39 +7,56 @@ admin.initializeApp({
 
 const db = admin.database();
 
-const updateDeviceState = async (deviceType, state) => {
+const getDeviceByName = async (deviceName) => {
+  const ref = db.ref('devices');
+  const snapshot = await ref.once('value');
+  const devices = snapshot.val();
+  const deviceEntry = Object.entries(devices).find(([, value]) => value.deviceName === deviceName);
+
+  if (!deviceEntry) {
+    throw new Error(`Device with name ${deviceName} not found.`);
+  }
+
+  const [id, deviceDetails] = deviceEntry;
+  return { id, ...deviceDetails };
+};
+
+const updateDeviceState = async (deviceName, state) => {
   try {
-    const ref = db.ref(deviceConfig[deviceType].stateRef);
-    await ref.set(state);
-    console.log(`${deviceType} state updated to: ${state}`);
+    const device = await getDeviceByName(deviceName);
+    const stateRef = db.ref(`devices/${device.id}/deviceState`);
+    await stateRef.set(state);
+    console.log(`${deviceName} state updated to: ${state}`);
   } catch (error) {
-    console.error(`Error updating the ${deviceType} state:`, error);
+    console.error(`Error updating the ${deviceName} state:`, error);
     throw error;
   }
 };
 
-const readDeviceState = async (deviceType) => {
+const readDeviceState = async (deviceName) => {
   try {
-    const ref = db.ref(deviceConfig[deviceType].stateRef);
-    const snapshot = await ref.once('value');
+    const device = await getDeviceByName(deviceName);
+    const stateRef = db.ref(`devices/${device.id}/deviceState`);
+    const snapshot = await stateRef.once('value');
     const state = snapshot.val();
-    console.log(`${deviceType} state is: ${state}`);
+    console.log(`${deviceName} state is: ${state}`);
     return state;
   } catch (error) {
-    console.error(`Error reading the ${deviceType} state:`, error);
+    console.error(`Error reading the ${deviceName} state:`, error);
     throw error;
   }
 };
 
-const readDeviceImage = async (deviceType) => {
+const readDeviceImage = async (deviceName) => {
   try {
-    const ref = db.ref(deviceConfig[deviceType].imageRef);
-    const snapshot = await ref.once('value');
+    const device = await getDeviceByName(deviceName);
+    const imageRef = db.ref(`devices/${device.id}/deviceIcon`);
+    const snapshot = await imageRef.once('value');
     const imageUrl = snapshot.val();
-    console.log(`${deviceType} imageUrl is: ${imageUrl}`);
+    console.log(`${deviceName} imageUrl is: ${imageUrl}`);
     return imageUrl;
   } catch (error) {
-    console.error(`Error reading the ${deviceType} image:`, error);
+    console.error(`Error reading the ${deviceName} image:`, error);
     throw error;
   }
 };
