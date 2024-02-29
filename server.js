@@ -1,7 +1,14 @@
 const express = require('express');
+const { updateDeviceState, readDeviceState, readDeviceImage } = require('./databaseConnection');
 const app = express();
 const PORT = process.env.PORT || 3000;
-const { updateDeviceState, readDeviceState, readDeviceImage } = require('./databaseConnection');
+
+// Import Swagger packages
+const swaggerUi = require('swagger-ui-express');
+const YAML = require('yamljs');
+
+// Load Swagger documentation
+const swaggerDocument = YAML.load('./swagger.yaml');
 
 app.use(express.json());
 
@@ -34,10 +41,12 @@ app.get('/device/:type/image', async (req, res) => {
   try {
     const imageUrl = await readDeviceImage(type);
     res.json({ imageUrl: imageUrl });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  } catch (error) {    res.status(500).json({ error: error.message });
   }
 });
+
+// Serve Swagger docs
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

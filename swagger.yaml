@@ -1,0 +1,64 @@
+swagger: '2.0'
+info:
+  version: '1.0.0'
+  title: Smart Home API
+  description: API to manage smart home devices
+host: 'https://server-o8if.onrender.com'
+basePath: '/'
+schemes:
+  - http
+paths:
+  /device/{type}:
+    post:
+      summary: Update device state
+      description: Updates the state of a specific device
+      parameters:
+        - in: path
+          name: type
+          required: true
+          type: string
+          description: Type of the device
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              state:
+                type: string
+                example: 'on'
+      responses:
+        200:
+          description: Device state updated successfully
+        500:
+          description: Error updating device state
+  /device/{type}/state:
+    get:
+      summary: Read device state
+      description: Returns the current state of a specific device
+      parameters:
+        - in: path
+          name: type
+          required: true
+          type: string
+          description: Type of the device
+      responses:
+        200:
+          description: Device state retrieved successfully
+        500:
+          description: Error retrieving device state
+  /device/{type}/image:
+    get:
+      summary: Read device image URL
+      description: Returns the image URL of a specific device
+      parameters:
+        - in: path
+          name: type
+          required: true
+          type: string
+          description: Type of the device
+      responses:
+        200:
+          description: Device image URL retrieved successfully
+        500:
+          description: Error retrieving device image URL
