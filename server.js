@@ -1,5 +1,5 @@
 const express = require('express');
-const { updateDeviceState, readDeviceState, readDeviceImage } = require('./databaseConnection');
+const { updateDeviceState, readDeviceState, readDeviceImage, getAllDeviceNames } = require('./databaseConnection');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -23,6 +23,17 @@ app.post('/device/:type', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+app.get('/devices/name', async (req, res) => {
+  try {
+    const deviceNames = await getAllDeviceNames();
+    res.json({ deviceNames });
+  } catch (error) {
+    console.error(`Error fetching device names:`, error);
+    res.status(500).json({ error: 'Failed to fetch device names' });
+  }
+});
+
 
 // Read device state
 app.get('/device/:type/state', async (req, res) => {

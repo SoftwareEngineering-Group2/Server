@@ -62,3 +62,19 @@ paths:
           description: Device image URL retrieved successfully
         500:
           description: Error retrieving device image URL
+  /devices/name:
+      get:
+        summary: Get All Device Names
+        description: Retrieves a list of all device names stored in the database.
+        responses:
+          200:
+            description: A list of device names successfully retrieved.
+            schema:
+              type: object
+              properties:
+                deviceNames:
+                  type: array
+                  items:
+                    type: string
+          500:
+            description: Error fetching device names.
