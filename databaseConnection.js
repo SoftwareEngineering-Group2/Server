@@ -76,4 +76,5 @@ const readDeviceImage = async (deviceName) => {
   }
 };
 
-module.exports = { updateDeviceState, readDeviceState, readDeviceImage, getAllDevices };
+
+module.exports = { updateDeviceState, readDeviceState, readDeviceImage, getAllDevices};

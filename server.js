@@ -1,5 +1,6 @@
 const express = require('express');
 const { updateDeviceState, readDeviceState, readDeviceImage, getAllDevices } = require('./databaseConnection');
+const { authenticate } = require('./authMiddleware'); // Import the middleware
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -62,6 +63,20 @@ app.get('/device/:type/image', async (req, res) => {
   } catch (error) {    res.status(500).json({ error: error.message });
   }
 });
+
+
+// ROUTE FOR TESTING CLIENT AUTHORIZATION
+app.get('/test/devices/state', authenticate, async (req, res) => {
+  try {
+    const allDevices = await getAllDevices();
+    res.json({ allDevices });
+  } catch (error) {
+    console.error(`Error fetching devices:`, error);
+    res.status(500).json({ error: 'Failed to fetch devices' });
+  }
+});
+
+
 
 // Serve Swagger docs
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
