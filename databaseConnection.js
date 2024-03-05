@@ -21,12 +21,17 @@ const getDeviceByName = async (deviceName) => {
   return { id, ...deviceDetails };
 };
 
-const getAllDeviceNames = async () => {
+const getAllDevices = async () => {
   const ref = db.ref('devices');
   const snapshot = await ref.once('value');
   const devices = snapshot.val();
-  const deviceNames = Object.values(devices).map(device => device.deviceName);
-  return deviceNames;
+
+  const combinedDevices = Object.values(devices).map(device => ({
+    deviceName: device.deviceName,
+    deviceState: device.deviceState
+  }));
+
+  return combinedDevices;
 };
 
 
@@ -70,4 +75,4 @@ const readDeviceImage = async (deviceName) => {
   }
 };
 
-module.exports = { updateDeviceState, readDeviceState, readDeviceImage, getAllDeviceNames };
+module.exports = { updateDeviceState, readDeviceState, readDeviceImage, getAllDevices };
