@@ -26,13 +26,14 @@ const getAllDevices = async () => {
   const snapshot = await ref.once('value');
   const devices = snapshot.val();
 
-  const combinedDevices = Object.values(devices).map(device => ({
+  const allDevices = Object.entries(devices).map(([id, device]) => ({
+    id, // Include the device ID
     deviceName: device.deviceName,
     deviceState: device.deviceState
   }));
-
-  return combinedDevices;
+  return allDevices;
 };
+
 
 
 const updateDeviceState = async (deviceName, state) => {

@@ -33,11 +33,11 @@ app.post('/device/:type', async (req, res) => {
 
 app.get('/devices/state', async (req, res) => {
   try {
-    const deviceNames = await getAllDevices();
-    res.json({ deviceNames });
+    const allDevices = await getAllDevices();
+    res.json({ allDevices });
   } catch (error) {
-    console.error(`Error fetching device names:`, error);
-    res.status(500).json({ error: 'Failed to fetch device names' });
+    console.error(`Error fetching devices:`, error);
+    res.status(500).json({ error: 'Failed to fetch devices' });
   }
 });
 
