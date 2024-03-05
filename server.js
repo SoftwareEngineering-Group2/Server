@@ -3,6 +3,8 @@ const { updateDeviceState, readDeviceState, readDeviceImage, getAllDeviceNames }
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+const cors = require('cors');
+
 // Import Swagger packages
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
@@ -10,7 +12,12 @@ const YAML = require('yamljs');
 // Load Swagger documentation
 const swaggerDocument = YAML.load('./swagger.yaml');
 
-app.use(express.json());
+//app.use(express.json());
+
+// Use CORS and allow all origins
+app.use(cors({
+  origin: '*' // Allows requests from any origin
+}));
 
 // Update device state
 app.post('/device/:type', async (req, res) => {
