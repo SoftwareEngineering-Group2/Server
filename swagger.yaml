@@ -64,8 +64,8 @@ paths:
           description: Error retrieving device image URL
   /devices/state:
       get:
-        summary: Get All Device Names and their current state
-        description: Retrieves a list of all device names and their state stored in the database.
+        summary: Get All Devices ID, Names and their current state
+        description: Retrieves a list of all device IDs, names and their state stored in the database.
         responses:
           200:
             description: A list of device were successfully retrieved.

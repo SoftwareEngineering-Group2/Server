@@ -1,32 +1,47 @@
 const express = require('express');
+const http = require('http');
+const { Server } = require("socket.io");
+const cors = require('cors');
 const { updateDeviceState, readDeviceState, readDeviceImage, getAllDevices } = require('./databaseConnection');
 const { authenticate } = require('./authMiddleware'); // Import the middleware
-const app = express();
-const PORT = process.env.PORT || 3000;
-
-const cors = require('cors');
-
-// Import Swagger packages
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
 
-// Load Swagger documentation
+const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "*", // Allows WebSocket connections from any origin
+    methods: ["GET", "POST"]
+  }
+});
+
+const PORT = process.env.PORT || 3000;
 const swaggerDocument = YAML.load('./swagger.yaml');
 
-//app.use(express.json());
+// Middleware
+app.use(cors({ origin: '*' }));
+//app.use(express.json()); // Uncomment if you're parsing JSON bodies
 
-// Use CORS and allow all origins
-app.use(cors({
-  origin: '*' // Allows requests from any origin
-}));
+// Serve Swagger docs
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-// Update device state
+// WebSocket connection
+io.on('connection', (socket) => {
+  console.log('A user connected');
+  socket.on('disconnect', () => {
+    console.log('User disconnected');
+  });
+});
+
+// Modify API routes to emit events
 app.post('/device/:type', async (req, res) => {
   const { type } = req.params;
   const { state } = req.body;
   try {
     await updateDeviceState(type, state);
-    res.json({ message: `${type} turned ${state}` });
+    io.emit('device-state-changed', { type, state }); // Emitting to all clients
+  res.json('{ message: ${type} turned ${state} }');
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -81,6 +96,6 @@ app.get('/test/devices/state', authenticate, async (req, res) => {
 // Serve Swagger docs
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
