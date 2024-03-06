@@ -21,7 +21,7 @@ const swaggerDocument = YAML.load('./swagger.yaml');
 
 // Middleware
 app.use(cors({ origin: '*' }));
-//app.use(express.json()); // Uncomment if you're parsing JSON bodies
+app.use(express.json()); // Uncomment if you're parsing JSON bodies
 
 // Serve Swagger docs
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
