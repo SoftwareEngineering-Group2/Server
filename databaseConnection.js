@@ -76,5 +76,19 @@ const readDeviceImage = async (deviceName) => {
   }
 };
 
+const updateSpecificInformation = async (deviceName, rowToBeUpdated, newInformation) => {
+  try {
+    console.log(deviceName)
+    const device = await getDeviceByName(deviceName);
+    console.log(deviceName, device.id)
+    const rowRef = db.ref(`devices/${device.id}/${rowToBeUpdated}`)
+    await rowRef.set(newInformation);
+    console.log(`${deviceName} updated ${rowToBeUpdated} to ${newInformation}`)
+  } catch (error) {
+    console.error(`Error updating the ${deviceName} ${rowToBeUpdated}:`, error);
+    throw error;
+  }
+}
 
-module.exports = { updateDeviceState, readDeviceState, readDeviceImage, getAllDevices};
+
+module.exports = { updateDeviceState, readDeviceState, readDeviceImage, getAllDevices, updateSpecificInformation};

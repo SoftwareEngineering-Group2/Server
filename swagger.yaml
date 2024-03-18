@@ -63,18 +63,59 @@ paths:
         500:
           description: Error retrieving device image URL
   /devices/state:
-      get:
-        summary: Get All Devices ID, Names and their current state
-        description: Retrieves a list of all device IDs, names and their state stored in the database.
-        responses:
-          200:
-            description: A list of device were successfully retrieved.
-            schema:
-              type: object
-              properties:
-                deviceNames:
-                  type: array
-                  items:
-                    type: string
-          500:
-            description: Error fetching devices.
+    get:
+      summary: Get All Devices ID, Names and their current state
+      description: Retrieves a list of all device IDs, names and their state stored in the database.
+      responses:
+        200:
+          description: A list of device were successfully retrieved.
+          schema:
+            type: object
+            properties:
+              deviceNames:
+                type: array
+                items:
+                  type: string
+        500:
+          description: Error fetching devices.
+  /device/{deviceName}/{deviceInformation}:
+    post:
+      summary: Update specific information of a device
+      description: Updates specific information of a device identified by its name.
+      parameters:
+        - name: deviceName
+          in: path
+          description: Name of the device to be updated
+          required: true
+          type: string
+        - name: deviceInformation
+          in: path
+          description: Type of information to be updated
+          required: true
+          type: string
+        - name: newInformation
+          in: body
+          description: New information to be set for the device
+          required: true
+          schema:
+            type: object
+            properties:
+              newInformation:
+                type: string
+      responses:
+        200:
+          description: Success response
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: Success message
+        500:
+          description: Error response
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                description: Error message
