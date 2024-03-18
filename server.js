@@ -27,9 +27,14 @@ app.use(express.json()); // Uncomment if you're parsing JSON bodies
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // WebSocket connection
-io.on('connection', (socket) => {
+io.on('connection', async (socket) => {
   console.log('A user connected');
-  io.emit('All devices with their states', getAllDevices())
+  try {
+    const allDevices = await getAllDevices();
+    io.emit('all-devices', allDevices)
+  } catch (error) {
+    console.error(`Error fetching devices:`, error);
+  }
   socket.on('disconnect', () => {
     console.log('User disconnected');
   });
