@@ -29,6 +29,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 // WebSocket connection
 io.on('connection', (socket) => {
   console.log('A user connected');
+  io.emit('All devices with their states', getAllDevices())
   socket.on('disconnect', () => {
     console.log('User disconnected');
   });
