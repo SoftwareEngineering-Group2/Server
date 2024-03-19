@@ -47,7 +47,8 @@ app.post('/device/:type', async (req, res) => {
   try {
     await updateDeviceState(type, state);
     res.json({ message: `${type} turned ${state}` });
-    io.emit('device-state-changed', { type, state }); // Emitting to all clients
+    const allDevices = await getAllDevices();
+    io.emit('device-state-changed', allDevices); // Emitting to all clients
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
