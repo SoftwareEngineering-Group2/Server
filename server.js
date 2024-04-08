@@ -41,7 +41,7 @@ io.on('connection', async (socket) => {
 });
 
 // Modify API routes to emit events
-app.post('/device/:type', async (req, res) => {
+app.post('/device/:type',authenticate, async (req, res) => {
   const { type } = req.params;
   const { state } = req.body;
   try {
@@ -54,7 +54,7 @@ app.post('/device/:type', async (req, res) => {
   }
 });
 
-app.get('/devices/state', async (req, res) => {
+app.get('/devices/state', authenticate, async (req, res) => {
   try {
     const allDevices = await getAllDevices();
     res.json({ allDevices });
@@ -66,7 +66,7 @@ app.get('/devices/state', async (req, res) => {
 
 
 // Read device state
-app.get('/device/:type/state', async (req, res) => {
+app.get('/device/:type/state',authenticate, async (req, res) => {
   const { type } = req.params;
   try {
     const state = await readDeviceState(type);
@@ -99,7 +99,7 @@ app.get('/test/devices/state', authenticate, async (req, res) => {
 });
 
 
-app.post('/device/:deviceName/:deviceInformation', async (req, res) => {
+app.post('/device/:deviceName/:deviceInformation',authenticate, async (req, res) => {
   const { deviceName, deviceInformation } = req.params;
   const { newInformation } = req.body;
   try {
