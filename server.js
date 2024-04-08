@@ -70,7 +70,7 @@ app.get('/device/:type/state', async (req, res) => {
 });
 
 // Read device image URL
-app.get('/device/:type/image', async (req, res) => {
+app.get('/device/:type/image', authenticate, async (req, res) => {
   const { type } = req.params;
   try {
     const imageUrl = await readDeviceImage(type);
