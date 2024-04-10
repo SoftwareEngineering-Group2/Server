@@ -8,6 +8,60 @@ basePath: '/'
 schemes:
   - http
 paths:
+  /user/{uid}:
+    post:
+      summary: Update or create user name
+      description: Updates a user's name if the UID exists or creates a new user with the given UID if it does not exist.
+      parameters:
+        - in: path
+          name: uid
+          required: true
+          type: string
+          description: The UID of the user to update or create
+        - in: body
+          name: body
+          required: true
+          schema:
+            required:
+              - firstName
+              - lastName
+            properties:
+              firstName:
+                type: string
+                example: John
+              lastName:
+                type: string
+                example: Doe
+      responses:
+        200:
+          description: User name updated successfully or new user created
+        500:
+          description: Error updating or creating user
+    get:
+      summary: Get user names by UID
+      description: Retrieves the first and last name of a user by UID.
+      parameters:
+        - in: path
+          name: uid
+          required: true
+          type: string
+          description: The UID of the user
+      responses:
+        200:
+          description: User names retrieved successfully
+          schema:
+            type: object
+            properties:
+              firstName:
+                type: string
+                example: John
+              lastName:
+                type: string
+                example: Doe
+        404:
+          description: User not found
+        500:
+          description: Error retrieving user names
   /device/{type}:
     post:
       summary: Update device state

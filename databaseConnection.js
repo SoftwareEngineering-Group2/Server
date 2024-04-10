@@ -33,8 +33,74 @@ const getAllDevices = async () => {
   }));
   return allDevices;
 };
+const updateUserNames = async (uid, firstName, lastName) => {
+  try {
+    const usersRef = db.ref('members');
+    const snapshot = await usersRef.once('value');
+    const users = snapshot.val();
+    let userExists = false;
+    let userKey;
+
+    // Search for the user with the matching UID
+    for (const key in users) {
+      if (users[key].uid === uid) {
+        userExists = true;
+        userKey = key;
+        break;
+      }
+    }
+
+    if (userExists) {
+      // Update the first and last name of the specific user
+      await usersRef.child(userKey).update({ firstName, lastName });
+      console.log(`User names updated for UID: ${uid} - First Name: ${firstName}, Last Name: ${lastName}`);
+    } else {
+      // Create a new user with the provided UID and names
+      const newUserRef = usersRef.push(); // This creates a new user entry with a unique key
+      await newUserRef.set({
+        uid,
+        firstName,
+        lastName,
+        authorizationLevel: 'Adult'
+      });
+      console.log(`New user created with UID: ${uid} - First Name: ${firstName}, Last Name: ${lastName}`);
+    }
+  } catch (error) {
+    console.error('Error updating user names:', error);
+    throw error;
+  }
+}
 
 
+const getUserNamesByUid = async (uid) => {
+  try {
+    const usersRef = db.ref('members');
+    const snapshot = await usersRef.once('value');
+    const users = snapshot.val();
+    let userNames = null;
+
+    // Iterate over the users to find the one with the matching UID
+    for (const key in users) {
+      if (users.hasOwnProperty(key) && users[key].uid === uid) {
+        userNames = {
+          firstName: users[key].firstName,
+          lastName: users[key].lastName
+        };
+        break;
+      }
+    }
+
+    if (!userNames) {
+      throw new Error(`User with UID: ${uid} not found.`);
+    }
+
+    console.log(`User found - First Name: ${userNames.firstName}, Last Name: ${userNames.lastName}`);
+    return userNames;
+  } catch (error) {
+    console.error('Error getting user names:', error);
+    throw error;
+  }
+}
 
 const updateDeviceState = async (deviceName, state) => {
   try {
@@ -91,4 +157,4 @@ const updateSpecificInformation = async (deviceName, rowToBeUpdated, newInformat
 }
 
 
-module.exports = { updateDeviceState, readDeviceState, readDeviceImage, getAllDevices, updateSpecificInformation};
+module.exports = { updateDeviceState, readDeviceState, readDeviceImage, getAllDevices, updateSpecificInformation, updateUserNames, getUserNamesByUid};

@@ -2,7 +2,7 @@ const express = require('express');
 const http = require('http');
 const { Server } = require("socket.io");
 const cors = require('cors');
-const { updateDeviceState, readDeviceState, readDeviceImage, getAllDevices, updateSpecificInformation } = require('./databaseConnection');
+const { updateDeviceState, readDeviceState, readDeviceImage, getAllDevices, updateSpecificInformation, updateUserNames, getUserNamesByUid } = require('./databaseConnection');
 const { authenticate } = require('./authMiddleware'); // Import the middleware
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
@@ -53,6 +53,30 @@ app.post('/device/:type',authenticate, async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+app.post('/user/:uid', async(req,res) => {
+  const { uid } = req.params;
+  const { firstName, lastName} = req.body;
+  try{
+    await updateUserNames(uid, firstName, lastName)
+    res.json(`First name: ${firstName} last name: ${lastName} added to user with UID: ${uid}`)
+  }
+  catch(error){
+    console.log(error)
+  }
+  
+})
+
+app.get('/user/:uid', async(req,res) => {
+  const { uid } = req.params;
+  try{
+    const name = await getUserNamesByUid(uid)
+    res.json(name)
+  }
+  catch{
+    console.log(error)
+  }
+})
 
 app.get('/devices/state', authenticate, async (req, res) => {
   try {
