@@ -21,18 +21,40 @@ const getDeviceByName = async (deviceName) => {
   return { id, ...deviceDetails };
 };
 
-const getAllDevices = async () => {
-  const ref = db.ref('devices');
-  const snapshot = await ref.once('value');
-  const devices = snapshot.val();
+const getAllDevices = async (userUid) => {
+  // Reference to the members in the database
+  const userRef = db.ref('members');
+  const userSnapshot = await userRef.once('value');
+  const users = userSnapshot.val(); // Assuming this returns an object where each key is a user ID
 
-  const allDevices = Object.entries(devices).map(([id, device]) => ({
-    id, // Include the device ID
-    deviceName: device.deviceName,
-    deviceState: device.deviceState
-  }));
-  return allDevices;
+  let userAuthLevel = null;
+
+  // Loop through the users to find the one with the matching uid
+  Object.entries(users).forEach(([key, user]) => {
+    if (user.uid === userUid) {
+      userAuthLevel = user.authorizationLevel;
+    }
+  });
+
+
+  // Then, filter devices based on this authorization level
+  const devicesRef = db.ref('devices');
+  const devicesSnapshot = await devicesRef.once('value');
+  const devices = devicesSnapshot.val();
+  const authorizedDevices = Object.entries(devices)
+    .filter(([id, device]) => device.deviceAuthorizationLevel <= userAuthLevel)
+    .map(([id, device]) => ({
+      id, // The device ID
+      deviceName: device.deviceName,
+      deviceState: device.deviceState
+    }));
+
+  return authorizedDevices;
 };
+
+
+
+
 const updateUserNames = async (uid, firstName, lastName) => {
   try {
     const usersRef = db.ref('members');

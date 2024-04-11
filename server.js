@@ -3,7 +3,7 @@ const http = require('http');
 const { Server } = require("socket.io");
 const cors = require('cors');
 const { updateDeviceState, readDeviceState, readDeviceImage, getAllDevices, updateSpecificInformation, updateUserNames, getUserNamesByUid } = require('./databaseConnection');
-const { authenticate } = require('./authMiddleware'); // Import the middleware
+const { authenticate } = require('./authMiddleware');
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
 
@@ -11,7 +11,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "*", // Allows WebSocket connections from any origin
+    origin: "*",
     methods: ["GET", "POST"]
   }
 });
@@ -21,7 +21,7 @@ const swaggerDocument = YAML.load('./swagger.yaml');
 
 // Middleware
 app.use(cors({ origin: '*' }));
-app.use(express.json()); // Uncomment if you're parsing JSON bodies
+app.use(express.json());
 
 // Serve Swagger docs
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
@@ -40,7 +40,7 @@ io.on('connection', async (socket) => {
   });
 });
 
-// Modify API routes to emit events
+// Route for updating the state of a device
 app.post('/device/:type',/*authenticate,*/ async (req, res) => {
   const { type } = req.params;
   const { state } = req.body;
@@ -54,6 +54,7 @@ app.post('/device/:type',/*authenticate,*/ async (req, res) => {
   }
 });
 
+// Route for adding/updating a users firstname and lastname
 app.post('/user/:uid',/*authenticate,*/ async(req,res) => {
   const { uid } = req.params;
   const { firstName, lastName} = req.body;
@@ -67,6 +68,7 @@ app.post('/user/:uid',/*authenticate,*/ async(req,res) => {
   
 })
 
+// Route for getting the user name from UID
 app.get('/user/:uid',/*authenticate,*/ async(req,res) => {
   const { uid } = req.params;
   try{
@@ -78,9 +80,11 @@ app.get('/user/:uid',/*authenticate,*/ async(req,res) => {
   }
 })
 
+// Route for getting all the devices and their state
 app.get('/devices/state', /*authenticate,*/ async (req, res) => {
   try {
-    const allDevices = await getAllDevices();
+    const { uid } = req.body
+    const allDevices = await getAllDevices(uid);
     res.json({ allDevices });
   } catch (error) {
     console.error(`Error fetching devices:`, error);
@@ -88,8 +92,7 @@ app.get('/devices/state', /*authenticate,*/ async (req, res) => {
   }
 });
 
-
-// Read device state
+// Route for reading a specific devices state
 app.get('/device/:type/state',/*authenticate,*/ async (req, res) => {
   const { type } = req.params;
   try {
@@ -100,7 +103,7 @@ app.get('/device/:type/state',/*authenticate,*/ async (req, res) => {
   }
 });
 
-// Read device image URL
+// Route for reading a specific devices image
 app.get('/device/:type/image', /*authenticate,*/ async (req, res) => {
   const { type } = req.params;
   try {
@@ -110,10 +113,7 @@ app.get('/device/:type/image', /*authenticate,*/ async (req, res) => {
   }
 });
 
-
-
-
-
+// Route for reading a specific information from a specific device
 app.post('/device/:deviceName/:deviceInformation',/*authenticate,*/ async (req, res) => {
   const { deviceName, deviceInformation } = req.params;
   const { newInformation } = req.body;
@@ -125,8 +125,6 @@ app.post('/device/:deviceName/:deviceInformation',/*authenticate,*/ async (req, 
     res.status(500).json({ error: error.message });
   }
 });
-
-
 
 // Serve Swagger docs
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
