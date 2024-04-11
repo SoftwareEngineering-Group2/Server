@@ -34,6 +34,35 @@ const getAllDevices = async () => {
   return allDevices;
 };
 
+const getAllDevicesTest = async(uid) => {
+  // First, get the user's authorization level
+  const userRef = db.ref('members');
+  const userSnapshot = await userRef.once('value');
+  const users = userSnapshot.val();
+
+  // Find the user with the matching uid and get their authorization level
+  let userAuthLevel = null;
+  for (const key in users) {
+    if (users[key].uid === uid) {
+      userAuthLevel = users[key].authorizationLevel;
+      break; // Stop the loop once we find the user
+    }
+  }
+  // Then, filter devices based on this authorization level
+  const devicesRef = db.ref('devices');
+  const devicesSnapshot = await devicesRef.once('value');
+  const devices = devicesSnapshot.val();
+  const authorizedDevices = Object.entries(devices)
+    .filter(([id, device]) => device.deviceAuthorizationLevel <= userAuthLevel)
+    .map(([id, device]) => ({
+      id, // The device ID
+      deviceName: device.deviceName,
+      deviceState: device.deviceState
+    }));
+
+  return authorizedDevices;
+}
+
 const updateUserNames = async (uid, firstName, lastName) => {
   try {
     const usersRef = db.ref('members');
@@ -158,4 +187,4 @@ const updateSpecificInformation = async (deviceName, rowToBeUpdated, newInformat
 }
 
 
-module.exports = { updateDeviceState, readDeviceState, readDeviceImage, getAllDevices, updateSpecificInformation, updateUserNames, getUserNamesByUid};
+module.exports = { updateDeviceState, readDeviceState, readDeviceImage, getAllDevices, updateSpecificInformation, updateUserNames, getUserNamesByUid, getAllDevicesTest};

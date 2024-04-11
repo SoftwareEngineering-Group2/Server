@@ -2,7 +2,7 @@ const express = require('express');
 const http = require('http');
 const { Server } = require("socket.io");
 const cors = require('cors');
-const { updateDeviceState, readDeviceState, readDeviceImage, getAllDevices, updateSpecificInformation, updateUserNames, getUserNamesByUid } = require('./databaseConnection');
+const { updateDeviceState, readDeviceState, readDeviceImage, getAllDevices, updateSpecificInformation, updateUserNames, getUserNamesByUid, getAllDevicesTest } = require('./databaseConnection');
 const { authenticate } = require('./authMiddleware');
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
@@ -91,6 +91,19 @@ app.get('/devices/state', /*authenticate,*/ async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch devices' });
   }
 });
+
+app.get('/devices/testState/:uid', async(req, res) => {
+  console.log("here")
+  const { uid } = req.params;
+  try{
+    const allDevices = await getAllDevicesTest(uid);
+    res.json({allDevices})
+  }
+  catch(error){
+    console.error(`Error fetching devices:`, error)
+    res.status(500).json({ error: 'Failed to fetch devices' });
+  }
+})
 
 // Route for reading a specific devices state
 app.get('/device/:type/state',/*authenticate,*/ async (req, res) => {
