@@ -52,9 +52,6 @@ const getAllDevices = async (userUid) => {
   return authorizedDevices;
 };
 
-
-
-
 const updateUserNames = async (uid, firstName, lastName) => {
   try {
     const usersRef = db.ref('members');

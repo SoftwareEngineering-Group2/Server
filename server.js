@@ -81,9 +81,9 @@ app.get('/user/:uid',/*authenticate,*/ async(req,res) => {
 })
 
 // Route for getting all the devices and their state
-app.get('/devices/state', /*authenticate,*/ async (req, res) => {
+app.get('/devices/state:uid', /*authenticate,*/ async (req, res) => {
   try {
-    const { uid } = req.body
+    const { uid } = req.params;
     const allDevices = await getAllDevices(uid);
     res.json({ allDevices });
   } catch (error) {
