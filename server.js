@@ -54,7 +54,7 @@ app.post('/device/:type',/*authenticate,*/ async (req, res) => {
   }
 });
 
-app.post('/user/:uid', async(req,res) => {
+app.post('/user/:uid',/*authenticate,*/ async(req,res) => {
   const { uid } = req.params;
   const { firstName, lastName} = req.body;
   try{
@@ -67,7 +67,7 @@ app.post('/user/:uid', async(req,res) => {
   
 })
 
-app.get('/user/:uid', async(req,res) => {
+app.get('/user/:uid',/*authenticate,*/ async(req,res) => {
   const { uid } = req.params;
   try{
     const name = await getUserNamesByUid(uid)
@@ -78,7 +78,7 @@ app.get('/user/:uid', async(req,res) => {
   }
 })
 
-app.get('/devices/state', authenticate, async (req, res) => {
+app.get('/devices/state', /*authenticate,*/ async (req, res) => {
   try {
     const allDevices = await getAllDevices();
     res.json({ allDevices });
@@ -90,7 +90,7 @@ app.get('/devices/state', authenticate, async (req, res) => {
 
 
 // Read device state
-app.get('/device/:type/state',authenticate, async (req, res) => {
+app.get('/device/:type/state',/*authenticate,*/ async (req, res) => {
   const { type } = req.params;
   try {
     const state = await readDeviceState(type);
@@ -101,7 +101,7 @@ app.get('/device/:type/state',authenticate, async (req, res) => {
 });
 
 // Read device image URL
-app.get('/device/:type/image', authenticate, async (req, res) => {
+app.get('/device/:type/image', /*authenticate,*/ async (req, res) => {
   const { type } = req.params;
   try {
     const imageUrl = await readDeviceImage(type);
@@ -123,7 +123,7 @@ app.get('/test/devices/state', authenticate, async (req, res) => {
 });
 
 
-app.post('/device/:deviceName/:deviceInformation',authenticate, async (req, res) => {
+app.post('/device/:deviceName/:deviceInformation',/*authenticate,*/ async (req, res) => {
   const { deviceName, deviceInformation } = req.params;
   const { newInformation } = req.body;
   try {
