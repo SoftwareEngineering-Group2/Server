@@ -111,16 +111,7 @@ app.get('/device/:type/image', /*authenticate,*/ async (req, res) => {
 });
 
 
-// ROUTE FOR TESTING CLIENT AUTHORIZATION
-app.get('/test/devices/state', authenticate, async (req, res) => {
-  try {
-    const allDevices = await getAllDevices();
-    res.json({ allDevices });
-  } catch (error) {
-    console.error(`Error fetching devices:`, error);
-    res.status(500).json({ error: 'Failed to fetch devices' });
-  }
-});
+
 
 
 app.post('/device/:deviceName/:deviceInformation',/*authenticate,*/ async (req, res) => {
