@@ -41,7 +41,7 @@ io.on('connection', async (socket) => {
 });
 
 // Modify API routes to emit events
-app.post('/device/:type',authenticate, async (req, res) => {
+app.post('/device/:type',/*authenticate,*/ async (req, res) => {
   const { type } = req.params;
   const { state } = req.body;
   try {
