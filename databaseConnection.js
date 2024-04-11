@@ -21,7 +21,7 @@ const getDeviceByName = async (deviceName) => {
   return { id, ...deviceDetails };
 };
 
-const getAllDevices = async (uid) => {
+const getAllDevices = async () => {
   const ref = db.ref('devices');
   const snapshot = await ref.once('value');
   const devices = snapshot.val();
