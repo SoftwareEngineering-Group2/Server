@@ -69,16 +69,17 @@ app.post('/user/:uid',/*authenticate,*/ async(req,res) => {
 })
 
 // Route for getting the user name from UID
-app.get('/user/:uid',/*authenticate,*/ async(req,res) => {
+app.get('/user/:uid', /*authenticate,*/ async(req, res) => {
   const { uid } = req.params;
-  try{
-    const name = await getUserNamesByUid(uid)
-    res.json(name)
+  try {
+    const name = await getUserNamesByUid(uid);
+    res.json(name);
+  } catch (error) { // <-- error needs to be caught here
+    console.error(error);
+    res.status(500).json({ error: error.message });
   }
-  catch{
-    console.log(error)
-  }
-})
+});
+
 
 // Route for getting all the devices and their state
 app.get('/devices/state', /*authenticate,*/ async (req, res) => {
