@@ -36,6 +36,8 @@ io.on('connection', async (socket) => {
   try {
     const allDevices = await getAllDevices();
     io.emit('all-devices', allDevices)
+    const completeDeviceInformation = await getAllDeviceInformation()
+    io.emit('complete-device-information', completeDeviceInformation)
   } catch (error) {
     console.error(`Error fetching devices:`, error);
   }
@@ -111,7 +113,7 @@ app.get('/user/:uid', /*authenticate,*/ async(req, res) => {
   try {
     const name = await getUserNamesByUid(uid);
     res.json(name);
-  } catch (error) { // <-- error needs to be caught here
+  } catch (error) { 
     console.error(error);
     res.status(500).json({ error: error.message });
   }
@@ -171,6 +173,8 @@ app.post('/device/:deviceName/:deviceInformation',/*authenticate,*/ async (req, 
     console.log(deviceName, deviceInformation)
     await updateSpecificInformation(deviceName, deviceInformation, newInformation);
     res.json({ message: `${deviceName} turned ${deviceInformation} to ${newInformation}` });
+    const completeDeviceInformation = await getAllDeviceInformation()
+    io.emit('complete-device-information', completeDeviceInformation)
   }  catch (error) {
     res.status(500).json({ error: error.message });
   }
