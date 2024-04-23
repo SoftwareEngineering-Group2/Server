@@ -34,6 +34,18 @@ const getAllDevices = async () => {
   return allDevices;
 };
 
+const getAllDeviceInformation = async () => {
+  try {
+    const ref = db.ref('devices');
+    const snapshot = await ref.once('value');
+    const allDeviceInformation = snapshot.val();
+
+    return allDeviceInformation;
+  } catch (error) {
+    throw error;
+  }
+};
+
 const getAllDevicesTest = async(uid) => {
   // First, get the user's authorization level
   const userRef = db.ref('members');
@@ -187,4 +199,4 @@ const updateSpecificInformation = async (deviceName, rowToBeUpdated, newInformat
 }
 
 
-module.exports = { updateDeviceState, readDeviceState, readDeviceImage, getAllDevices, updateSpecificInformation, updateUserNames, getUserNamesByUid, getAllDevicesTest};
+module.exports = { updateDeviceState, readDeviceState, readDeviceImage, getAllDevices, updateSpecificInformation, updateUserNames, getUserNamesByUid, getAllDevicesTest, getAllDeviceInformation};
