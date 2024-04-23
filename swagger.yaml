@@ -86,6 +86,20 @@ paths:
           description: Device state updated successfully
         500:
           description: Error updating device state
+    get:
+      summary: Get device state
+      description: Retrieves the current state of a specific device
+      parameters:
+        - in: path
+          name: type
+          required: true
+          type: string
+          description: Type of the device
+      responses:
+        200:
+          description: Device state retrieved successfully
+        500:
+          description: Error retrieving device state
   /device/{type}/state:
     get:
       summary: Read device state
@@ -173,3 +187,70 @@ paths:
               error:
                 type: string
                 description: Error message
+  /device/{type}/{password}:
+    post:
+      summary: Update device state with password
+      description: Updates the state of a specific device with password authentication
+      parameters:
+        - in: path
+          name: type
+          required: true
+          type: string
+          description: Type of the device
+        - in: path
+          name: password
+          required: true
+          type: string
+          description: API password for authentication
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              newState:
+                type: string
+                example: 'on'
+      responses:
+        200:
+          description: Device state updated successfully
+        401:
+          description: Unauthorized - Invalid password
+        500:
+          description: Error updating device state
+  /device/{type}/{typeInformation}/{password}:
+    post:
+      summary: Update specific information of a device with password
+      description: Updates specific information of a device identified by its type and type information with password authentication
+      parameters:
+        - in: path
+          name: type
+          required: true
+          type: string
+          description: Type of the device
+        - in: path
+          name: typeInformation
+          required: true
+          type: string
+          description: Type of information to be updated
+        - in: path
+          name: password
+          required: true
+          type: string
+          description: API password for authentication
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              newState:
+                type: string
+                example: 'newState'
+      responses:
+        200:
+          description: Specific device information updated successfully
+        401:
+          description: Unauthorized - Invalid password
+        500:
+          description: Error updating specific device information
