@@ -71,11 +71,10 @@ app.post('/user/:uid',/*authenticate,*/ async(req,res) => {
   catch(error){
     console.log(error)
   }
-  
 })
 
 // Route for updating a device state using a static password (House and Simulations)
-app.post('/device/:type/:password', async (req, res) => {
+app.post('/static/device/:type/:password', async (req, res) => {
   const { type, password } = req.params;
   const { newState } = req.body;
   if (password !== apiPassword) {
@@ -92,7 +91,7 @@ app.post('/device/:type/:password', async (req, res) => {
 })
 
 // Route for updating special device information using a static password (House and Simulations)
-app.post('/device/:type/:typeInformation/:password', async (req, res) => {
+app.post('/static/device/:type/:typeInformation/:password', async (req, res) => {
   const { type, typeInformation, password } = req.params;
   const { newState } = req.body;
   if (password !== apiPassword) {
