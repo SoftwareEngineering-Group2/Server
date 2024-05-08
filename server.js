@@ -179,6 +179,18 @@ app.post('/device/:deviceName/:deviceInformation',/*authenticate,*/ async (req, 
   }
 });
 
+//Route for doing a skip on the media player
+app.post('/mediaPlayer/skip', async (req, res) => {
+  const { newInformation } = req.body;
+  try {
+    console.log(newInformation)
+    io.emit('skip-channel', newInformation)
+    res.json({ message: 'Skip emitted successfully' })
+  } catch (error) {
+    res.status(500).json({ error: error.message })
+  }
+})
+
 // Serve Swagger docs
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 

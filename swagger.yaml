@@ -254,3 +254,89 @@ paths:
           description: Unauthorized - Invalid password
         500:
           description: Error updating specific device information
+  /mediaPlayer/skip:
+    post:
+      summary: Skip media player channel
+      description: Skips the channel on the media player.
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              newInformation:
+                type: string
+                example: 'next'
+      responses:
+        200:
+          description: Skip emitted successfully
+        500:
+          description: Error skipping media player channel
+  /static/device/{type}/{password}:
+    post:
+      summary: Update device state with password (Static)
+      description: Updates the state of a specific device with password authentication (Static)
+      parameters:
+        - in: path
+          name: type
+          required: true
+          type: string
+          description: Type of the device
+        - in: path
+          name: password
+          required: true
+          type: string
+          description: API password for authentication
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              newState:
+                type: string
+                example: 'on'
+      responses:
+        200:
+          description: Device state updated successfully (Static)
+        401:
+          description: Unauthorized - Invalid password (Static)
+        500:
+          description: Error updating device state (Static)
+  /static/device/{type}/{typeInformation}/{password}:
+    post:
+      summary: Update specific information of a device with password (Static)
+      description: Updates specific information of a device identified by its type and type information with password authentication (Static)
+      parameters:
+        - in: path
+          name: type
+          required: true
+          type: string
+          description: Type of the device
+        - in: path
+          name: typeInformation
+          required: true
+          type: string
+          description: Type of information to be updated
+        - in: path
+          name: password
+          required: true
+          type: string
+          description: API password for authentication
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              newState:
+                type: string
+                example: 'newState'
+      responses:
+        200:
+          description: Specific device information updated successfully (Static)
+        401:
+          description: Unauthorized - Invalid password (Static)
+        500:
+          description: Error updating specific device information (Static)
