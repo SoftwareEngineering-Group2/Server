@@ -191,6 +191,45 @@ app.post('/mediaPlayer/skip', async (req, res) => {
   }
 })
 
+app.post('/sensor/:password', async (req, res) => {
+  const { password } = req.params;
+  const { newInformation } = req.body;
+  
+  // Define messages for different sensor types
+  let sensorMessage;
+  switch (newInformation) {
+    case 'gasSensor':
+      sensorMessage = 'Warning: High gas levels detected in the house.';
+      break;
+    case 'lightSensor':
+      sensorMessage = 'Light levels are low in the house.';
+      break;
+    case 'steamSensor':
+      sensorMessage = 'Warning: Steam detected.';
+      break;
+    case 'moistureSensor':
+      sensorMessage = 'Warning: High moisture levels detected in the house.';
+      break;
+    case 'motionSensor':
+      sensorMessage = 'Warning: Motion detected.';
+      break;
+    default:
+      sensorMessage = 'Unknown sensor information received.';
+      break;
+  }
+
+  if (password !== apiPassword) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+  try {
+    console.log(sensorMessage);
+    io.emit('sensor-channel', sensorMessage);
+    res.json({ message: 'Sensor warning sent successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Serve Swagger docs
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 

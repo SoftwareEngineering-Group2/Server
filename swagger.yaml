@@ -340,3 +340,35 @@ paths:
           description: Unauthorized - Invalid password (Static)
         500:
           description: Error updating specific device information (Static)
+  /sensor/{password}:
+    post:
+      summary: Emit sensor warning
+      description: Emits a warning message based on the received sensor information.
+      parameters:
+        - in: path
+          name: password
+          required: true
+          type: string
+          description: API password for authentication
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              newInformation:
+                type: string
+                enum:
+                  - gasSensor
+                  - lightSensor
+                  - steamSensor
+                  - moistureSensor
+                  - motionSensor
+                example: 'gasSensor'
+      responses:
+        200:
+          description: Sensor warning sent successfully
+        401:
+          description: Unauthorized - Invalid password
+        500:
+          description: Error sending sensor warning
