@@ -211,7 +211,7 @@ app.post('/sensor/:password', async (req, res) => {
       sensorMessage = 'Warning: High moisture levels detected in the house.';
       break;
     case 'motionSensor':
-      sensorMessage = 'Warning: Motion detected.';
+      sensorMessage = 'Motion detected.';
       break;
     default:
       sensorMessage = 'Unknown sensor information received.';
