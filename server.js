@@ -19,16 +19,18 @@ const io = new Server(server, {
 });
 
 
-
 const PORT = process.env.PORT || 3000;
 const swaggerDocument = YAML.load('./swagger.yaml');
+
 
 // Middleware
 app.use(cors({ origin: '*' }));
 app.use(express.json());
 
+
 // Serve Swagger docs
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 
 // WebSocket connection
 io.on('connection', async (socket) => {
@@ -46,8 +48,9 @@ io.on('connection', async (socket) => {
   });
 });
 
+
 // Route for updating the state of a device
-app.post('/device/:type',/*authenticate,*/ async (req, res) => {
+app.post('/device/:type',authenticate, async (req, res) => {
   const { type } = req.params;
   const { state } = req.body;
   try {
@@ -60,8 +63,9 @@ app.post('/device/:type',/*authenticate,*/ async (req, res) => {
   }
 });
 
+
 // Route for adding/updating a users firstname and lastname
-app.post('/user/:uid',/*authenticate,*/ async(req,res) => {
+app.post('/user/:uid',authenticate, async(req,res) => {
   const { uid } = req.params;
   const { firstName, lastName} = req.body;
   try{
@@ -72,6 +76,7 @@ app.post('/user/:uid',/*authenticate,*/ async(req,res) => {
     console.log(error)
   }
 })
+
 
 // Route for updating a device state using a static password (House and Simulations)
 app.post('/static/device/:type/:password', async (req, res) => {
@@ -90,6 +95,7 @@ app.post('/static/device/:type/:password', async (req, res) => {
   }
 })
 
+
 // Route for updating special device information using a static password (House and Simulations)
 app.post('/static/device/:type/:typeInformation/:password', async (req, res) => {
   const { type, typeInformation, password } = req.params;
@@ -107,7 +113,7 @@ app.post('/static/device/:type/:typeInformation/:password', async (req, res) => 
 
 
 // Route for getting the user name from UID
-app.get('/user/:uid', /*authenticate,*/ async(req, res) => {
+app.get('/user/:uid', authenticate, async(req, res) => {
   const { uid } = req.params;
   try {
     const name = await getUserNamesByUid(uid);
@@ -120,7 +126,7 @@ app.get('/user/:uid', /*authenticate,*/ async(req, res) => {
 
 
 // Route for getting all the devices and their state
-app.get('/devices/state', /*authenticate,*/ async (req, res) => {
+app.get('/devices/state', authenticate, async (req, res) => {
   try {
     const allDevices = await getAllDevices();
     res.json({ allDevices });
@@ -129,6 +135,7 @@ app.get('/devices/state', /*authenticate,*/ async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch devices' });
   }
 });
+
 
 app.get('/devices/testState/:uid', async(req, res) => {
   console.log("here")
@@ -143,8 +150,9 @@ app.get('/devices/testState/:uid', async(req, res) => {
   }
 })
 
+
 // Route for reading a specific devices state
-app.get('/device/:type/state',/*authenticate,*/ async (req, res) => {
+app.get('/device/:type/state', authenticate, async (req, res) => {
   const { type } = req.params;
   try {
     const state = await readDeviceState(type);
@@ -154,8 +162,9 @@ app.get('/device/:type/state',/*authenticate,*/ async (req, res) => {
   }
 });
 
+
 // Route for reading a specific devices image
-app.get('/device/:type/image', /*authenticate,*/ async (req, res) => {
+app.get('/device/:type/image', authenticate, async (req, res) => {
   const { type } = req.params;
   try {
     const imageUrl = await readDeviceImage(type);
@@ -164,8 +173,9 @@ app.get('/device/:type/image', /*authenticate,*/ async (req, res) => {
   }
 });
 
+
 // Route for updating specific information on specific device
-app.post('/device/:deviceName/:deviceInformation',/*authenticate,*/ async (req, res) => {
+app.post('/device/:deviceName/:deviceInformation',authenticate, async (req, res) => {
   const { deviceName, deviceInformation } = req.params;
   const { newInformation } = req.body;
   try {
@@ -179,6 +189,7 @@ app.post('/device/:deviceName/:deviceInformation',/*authenticate,*/ async (req, 
   }
 });
 
+
 //Route for doing a skip on the media player
 app.post('/mediaPlayer/skip', async (req, res) => {
   const { newInformation } = req.body;
@@ -190,6 +201,7 @@ app.post('/mediaPlayer/skip', async (req, res) => {
     res.status(500).json({ error: error.message })
   }
 })
+
 
 app.post('/sensor/:password', async (req, res) => {
   const { password } = req.params;
@@ -230,11 +242,14 @@ app.post('/sensor/:password', async (req, res) => {
   }
 });
 
+
 // Serve Swagger docs
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 
 server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
+
 
 module.exports = app;
